@@ -64,7 +64,7 @@ def reorganize(folder_path, extensions):
             os.rename(_file_tuple[1], new_filepath)
 
 if __name__ == '__main__':
-    folder_path = '/home/dominic/Downloads'
+    folder_path = sys.argv[1] 
     extensions = get_file_extensions(folder_path)
     create_ext_folders(folder_path, extensions)
     reorganize(folder_path, extensions)
