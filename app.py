@@ -7,19 +7,20 @@ import os
 from crontab import CronTab
 
 if __name__ == '__main__':
-    pass
-    # cron = CronTab(user='dominic')
-    
-    # filehandle_path = os.path.join(os.getcwd(), 'filehandler.py')
-    # print(filehandle_path)
+    # Parsing command line arguments
 
-    # command = f'python {filehandle_path}'
-    # print(command)
+    user = sys.argv[1]
+    folder_path = sys.argv[2]
 
-    # job = cron.new(command=command)
-    # job.minute.every(1)
-    # cron.write()
+    # Ensures that when the cronjob is set it has the path to filehander.py
+    # script
 
-    # print('task set!')
+    filehandler_path = os.path.join(os.getcwd(), 'filehandler.py')
 
-    # cron.remove_all
+    # Creating cron job
+
+    cron = CronTab(user=user)
+    job = cron.new(command=f'python {filehandler_path} {folder_path}')
+    job.minute.every(1)
+
+    cron.write()
