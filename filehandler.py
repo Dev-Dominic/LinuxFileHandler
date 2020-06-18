@@ -5,46 +5,54 @@
 import os
 import sys
 
+# CONSTANTS
+OMISSION_FOLDERS=['crdownload', 'download']
+
 def get_file_extensions(folder_path):
-    """Parses and returns unique list of file extensions 
+    """Parses and returns unique list of file extensions
 
     Args:
         folder_path: system path to folder to be parsed
 
-    Return: 
+    Return:
         extensions: dictionary containing keys with list of values representing
         files associated with given extension(key)
 
     """
-    extensions = {} 
+    extensions = {}
     for _file in os.listdir(folder_path):
         filepath = os.path.join(folder_path, _file)
 
-        # Ensures that only files with extensions are included 
+        # Ensures that only files with extensions are included
 
-        if not os.path.isfile(filepath): 
+        if not os.path.isfile(filepath):
             continue
 
         ext = _file.split('.')[-1]
         if not ext in extensions: # Stops duplicate entries
             extensions[ext] = [(_file, filepath)]
-        else: 
+        else:
             extensions[ext].append((_file, filepath))
     return extensions
 
 def create_ext_folders(folder_path, extensions):
     """Creates extension folder in a given folder path
-    
-    Args: 
+
+    Args:
         folder_path: system path to folder to be parsed
         extensions: dictionary containing keys with list of values representing
 
+    Return:
+        None
+
     """
-    for ext_folder in extensions.keys(): 
-        try: 
-            os.mkdir(os.path.join(folder_path, ext_folder))
-        except FileExistsError: 
-            print(f'{ext_folder} already exists')
+    for ext_folder in extensions.keys():
+        # Omits temporary download file type folders from being created
+        if not (ext_folder in OMISSION_FOLDERS):
+            try:
+                os.mkdir(os.path.join(folder_path, ext_folder))
+            except FileExistsError:
+                print(f'{ext_folder} already exists')
 
 def reorganize(folder_path, extensions):
     """Reorganizes files into extension folders
@@ -53,6 +61,9 @@ def reorganize(folder_path, extensions):
         folder_path: system path to folder to be parsed
         extensions: dictionary containing keys with list of values representing
 
+    Return:
+        None
+
     """
     for key,value in extensions.items():
         for _file_tuple in value:
@@ -60,11 +71,15 @@ def reorganize(folder_path, extensions):
             # The _file_tuple[0] represents just the file name of a given file
             # _file_tuple[1] represents the full file path
 
-            new_filepath = os.path.join(folder_path, key, _file_tuple[0]) 
+            new_filepath = os.path.join(folder_path, key, _file_tuple[0])
             os.rename(_file_tuple[1], new_filepath)
 
-if __name__ == '__main__':
-    folder_path = sys.argv[1] 
+def main():
+    """Main entry point"""
+    folder_path = sys.argv[1]
     extensions = get_file_extensions(folder_path)
     create_ext_folders(folder_path, extensions)
     reorganize(folder_path, extensions)
+
+if __name__ == '__main__':
+    main()
